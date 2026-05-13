@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>部门 Token 使用看板</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        body { font-family: var(--font-sans); }
+        .card-hover { transition: box-shadow 0.2s, transform 0.2s; }
+        .card-hover:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.08); transform: translateY(-2px); }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .rank-1 { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); }
+        .rank-2 { background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); }
+        .rank-3 { background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%); }
+        .bar-anim { animation: barGrow 0.6s ease-out; }
+        @keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 fade-in">
+            <div>
+                <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Token 使用看板</h1>
+                <p class="mt-1 text-sm text-gray-500">技术部 AI 助手使用情况统计 | 2026年5月</p>
+            </div>
+            <div class="mt-3 sm:mt-0 flex items-center gap-3">
+                <select class="text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    <option>2026年5月</option>
+                    <option>2026年4月</option>
+                    <option>2026年3月</option>
+                    <option>2026年 Q2</option>
+                    <option>2026年 Q1</option>
+                </select>
+                <button class="text-sm bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer">导出报告</button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 card-hover fade-in" style="animation-delay: 0.05s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">本月总消耗</p>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">2.84M</p>
+                        <p class="text-xs text-emerald-600 font-medium mt-1">↑ 12.3% 环比</p>
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded-lg">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 card-hover fade-in" style="animation-delay: 0.1s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">活跃人数</p>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">18 / 22</p>
+                        <p class="text-xs text-gray-500 font-medium mt-1">81.8% 覆盖率</p>
+                    </div>
+                    <div class="bg-emerald-50 p-3 rounded-lg">
+                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 card-hover fade-in" style="animation-delay: 0.15s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">人均日消耗</p>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">5,240</p>
+                        <p class="text-xs text-red-500 font-medium mt-1">↓ 3.1% 环比</p>
+                    </div>
+                    <div class="bg-amber-50 p-3 rounded-lg">
+                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 card-hover fade-in" style="animation-delay: 0.2s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">预算使用率</p>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">68.5%</p>
+                        <p class="text-xs text-emerald-600 font-medium mt-1">剩余 1.30M</p>
+                    </div>
+                    <div class="bg-violet-50 p-3 rounded-lg">
+                        <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Historical Trend -->
+            <div class="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm border border-gray-100 fade-in" style="animation-delay: 0.25s">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold text-gray-900">近 6 个月消耗趋势</h2>
+                    <div class="flex gap-2">
+                        <button class="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium cursor-pointer">总计</button>
+                        <button class="text-xs px-3 py-1 rounded-full text-gray-500 hover:bg-gray-100 font-medium transition-colors cursor-pointer">人均</button>
+                    </div>
+                </div>
+                <div class="h-64"><canvas id="trendChart"></canvas></div>
+            </div>
+            <!-- Department Breakdown -->
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 fade-in" style="animation-delay: 0.3s">
+                <h2 class="text-lg font-bold text-gray-900 mb-4">小组使用占比</h2>
+                <div class="h-64"><canvas id="deptChart"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Ranking Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-8 fade-in" style="animation-delay: 0.35s">
+            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h2 class="text-lg font-bold text-gray-900">个人使用排名</h2>
+                <div class="flex items-center gap-2">
+                    <input type="text" placeholder="搜索成员..." class="text-sm border border-gray-300 rounded-lg px-3 py-1.5 w-48 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    <select class="text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        <option>全部小组</option>
+                        <option>前端组</option>
+                        <option>后端组</option>
+                        <option>算法组</option>
+                        <option>测试组</option>
+                    </select>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50">
+                            <th class="px-6 py-3 text-left">排名</th>
+                            <th class="px-6 py-3 text-left">成员</th>
+                            <th class="px-6 py-3 text-left">小组</th>
+                            <th class="px-6 py-3 text-right">本月 Token</th>
+                            <th class="px-6 py-3 text-right">日均</th>
+                            <th class="px-6 py-3 text-right">环比</th>
+                            <th class="px-6 py-3 text-left" style="min-width:160px">配额使用</th>
+                            <th class="px-6 py-3 text-center">考核评分</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankingTable" class="divide-y divide-gray-100"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Personal Comparison Charts -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8 fade-in" style="animation-delay: 0.4s">
+            <h2 class="text-lg font-bold text-gray-900 mb-1">历史使用对比</h2>
+            <p class="text-sm text-gray-500 mb-4">Top 5 成员月度消耗对比（单位：千 Token）</p>
+            <div class="h-80"><canvas id="comparisonChart"></canvas></div>
+        </div>
+
+        <!-- Evaluation Summary -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 fade-in" style="animation-delay: 0.45s">
+            <h2 class="text-lg font-bold text-gray-900 mb-4">考核评估摘要</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Top Performers -->
+                <div class="bg-emerald-50 rounded-lg p-4">
+                    <h3 class="text-sm font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                        高效使用
+                    </h3>
+                    <ul class="space-y-2" id="topPerformers"></ul>
+                </div>
+                <!-- Underutilized -->
+                <div class="bg-amber-50 rounded-lg p-4">
+                    <h3 class="text-sm font-semibold text-amber-800 mb-3 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                        使用不足
+                    </h3>
+                    <ul class="space-y-2" id="underutilized"></ul>
+                </div>
+                <!-- Anomalies -->
+                <div class="bg-red-50 rounded-lg p-4">
+                    <h3 class="text-sm font-semibold text-red-800 mb-3 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                        异常预警
+                    </h3>
+                    <ul class="space-y-2" id="anomalies"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const members = [
+        { name: '张明', group: '算法组', tokens: 285000, prev: 242000, quota: 300000, score: 95, tasks: 156, avgTime: 12 },
+        { name: '李婷', group: '后端组', tokens: 267000, prev: 289000, quota: 280000, score: 92, tasks: 148, avgTime: 15 },
+        { name: '王浩', group: '前端组', tokens: 248000, prev: 198000, quota: 250000, score: 89, tasks: 134, avgTime: 14 },
+        { name: '赵雪', group: '算法组', tokens: 232000, prev: 256000, quota: 260000, score: 87, tasks: 125, avgTime: 13 },
+        { name: '陈伟', group: '后端组', tokens: 218000, prev: 175000, quota: 240000, score: 85, tasks: 119, avgTime: 16 },
+        { name: '刘洋', group: '前端组', tokens: 196000, prev: 210000, quota: 220000, score: 82, tasks: 108, avgTime: 18 },
+        { name: '周静', group: '测试组', tokens: 185000, prev: 162000, quota: 200000, score: 80, tasks: 142, avgTime: 11 },
+        { name: '吴强', group: '后端组', tokens: 178000, prev: 195000, quota: 210000, score: 78, tasks: 97, avgTime: 19 },
+        { name: '郑琳', group: '算法组', tokens: 165000, prev: 148000, quota: 200000, score: 76, tasks: 89, avgTime: 20 },
+        { name: '孙磊', group: '前端组', tokens: 152000, prev: 178000, quota: 190000, score: 74, tasks: 82, avgTime: 21 },
+        { name: '黄芳', group: '测试组', tokens: 138000, prev: 125000, quota: 180000, score: 71, tasks: 95, avgTime: 17 },
+        { name: '林峰', group: '后端组', tokens: 125000, prev: 142000, quota: 170000, score: 68, tasks: 71, avgTime: 22 },
+        { name: '何丽', group: '算法组', tokens: 98000, prev: 115000, quota: 150000, score: 62, tasks: 56, avgTime: 25 },
+        { name: '马超', group: '前端组', tokens: 86000, prev: 72000, quota: 140000, score: 58, tasks: 48, avgTime: 28 },
+        { name: '罗燕', group: '测试组', tokens: 72000, prev: 85000, quota: 130000, score: 55, tasks: 62, avgTime: 23 },
+        { name: '杨光', group: '后端组', tokens: 58000, prev: 62000, quota: 120000, score: 48, tasks: 35, avgTime: 32 },
+        { name: '徐佳', group: '前端组', tokens: 45000, prev: 52000, quota: 110000, score: 42, tasks: 28, avgTime: 35 },
+        { name: '朱鹏', group: '测试组', tokens: 32000, prev: 38000, quota: 100000, score: 35, tasks: 18, avgTime: 42 },
+    ];
+
+    const groupColors = { '前端组': '#3b82f6', '后端组': '#10b981', '算法组': '#8b5cf6', '测试组': '#f59e0b' };
+    const workingDays = 22;
+
+    // Render Ranking Table
+    const tbody = document.getElementById('rankingTable');
+    members.forEach((m, i) => {
+        const rank = i + 1;
+        const change = ((m.tokens - m.prev) / m.prev * 100).toFixed(1);
+        const isUp = change > 0;
+        const quotaPct = (m.tokens / m.quota * 100).toFixed(0);
+        const daily = Math.round(m.tokens / workingDays);
+        let rankBadge = `<span class="inline-flex items-center justify-center w-7 h-7 text-sm font-bold text-gray-500 bg-gray-100 rounded-full">${rank}</span>`;
+        if (rank === 1) rankBadge = `<span class="inline-flex items-center justify-center w-7 h-7 text-sm font-bold text-yellow-800 bg-yellow-200 rounded-full">1</span>`;
+        if (rank === 2) rankBadge = `<span class="inline-flex items-center justify-center w-7 h-7 text-sm font-bold text-gray-700 bg-gray-200 rounded-full">2</span>`;
+        if (rank === 3) rankBadge = `<span class="inline-flex items-center justify-center w-7 h-7 text-sm font-bold text-amber-800 bg-orange-200 rounded-full">3</span>`;
+        const scoreColor = m.score >= 80 ? 'text-emerald-600 bg-emerald-50' : m.score >= 60 ? 'text-amber-600 bg-amber-50' : 'text-red-600 bg-red-50';
+        const barColor = quotaPct > 90 ? 'bg-red-500' : quotaPct > 70 ? 'bg-blue-500' : 'bg-gray-300';
+
+        tbody.innerHTML += `
+        <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-3">${rankBadge}</td>
+            <td class="px-6 py-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white" style="background:${groupColors[m.group]}">${m.name[0]}</div>
+                    <div><p class="text-sm font-medium text-gray-900">${m.name}</p><p class="text-xs text-gray-500">${m.tasks} 次任务 · 平均 ${m.avgTime}min</p></div>
+                </div>
+            </td>
+            <td class="px-6 py-3"><span class="text-xs font-medium px-2 py-0.5 rounded-full text-white" style="background:${groupColors[m.group]}">${m.group}</span></td>
+            <td class="px-6 py-3 text-right text-sm font-semibold text-gray-900">${(m.tokens / 1000).toFixed(0)}K</td>
+            <td class="px-6 py-3 text-right text-sm text-gray-600">${daily.toLocaleString()}</td>
+            <td class="px-6 py-3 text-right"><span class="text-sm font-medium ${isUp ? 'text-emerald-600' : 'text-red-500'}">${isUp ? '↑' : '↓'} ${Math.abs(change)}%</span></td>
+            <td class="px-6 py-3"><div class="flex items-center gap-2"><div class="flex-1 bg-gray-200 rounded-full h-2"><div class="${barColor} h-2 rounded-full" style="width:${Math.min(quotaPct, 100)}%"></div></div><span class="text-xs text-gray-500 w-10">${quotaPct}%</span></div></td>
+            <td class="px-6 py-3 text-center"><span class="inline-flex items-center justify-center px-2 py-1 text-sm font-bold rounded-lg ${scoreColor}">${m.score}</span></td>
+        </tr>`;
+    });
+
+    // Trend Chart
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+            labels: ['2025/12', '2026/01', '2026/02', '2026/03', '2026/04', '2026/05'],
+            datasets: [{
+                label: '总消耗 (千)',
+                data: [1850, 2100, 2320, 2580, 2530, 2840],
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 3,
+                pointRadius: 5,
+                pointBackgroundColor: '#3b82f6',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+            }, {
+                label: '人均 (百)',
+                data: [92, 105, 116, 129, 126, 158],
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 2,
+                borderDash: [5, 3],
+                pointRadius: 4,
+                pointBackgroundColor: '#10b981',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                yAxisID: 'y1',
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: 'index' },
+            plugins: { legend: { position: 'top', labels: { usePointStyle: true, padding: 16, font: { size: 12 } } }, tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', padding: 10, cornerRadius: 8 } },
+            scales: {
+                y: { position: 'left', title: { display: true, text: '千 Token', font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11 } } },
+                y1: { position: 'right', title: { display: true, text: '人均 (百)', font: { size: 11 } }, grid: { drawOnChartArea: false }, ticks: { font: { size: 11 } } },
+                x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11 } } }
+            }
+        }
+    });
+
+    // Department Chart
+    new Chart(document.getElementById('deptChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['算法组', '后端组', '前端组', '测试组'],
+            datasets: [{
+                data: [780, 788, 727, 395],
+                backgroundColor: ['#8b5cf6', '#10b981', '#3b82f6', '#f59e0b'],
+                borderWidth: 0,
+                hoverOffset: 6,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '65%',
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 12, font: { size: 12 } } },
+                tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', padding: 10, cornerRadius: 8, callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw}K Token (${(ctx.raw/2690*100).toFixed(1)}%)` } }
+            }
+        }
+    });
+
+    // Comparison Chart
+    const top5 = members.slice(0, 5);
+    const months = ['2025/12', '2026/01', '2026/02', '2026/03', '2026/04', '2026/05'];
+    const historyData = {
+        '张明': [165, 180, 195, 215, 242, 285],
+        '李婷': [210, 225, 240, 268, 289, 267],
+        '王浩': [120, 135, 155, 178, 198, 248],
+        '赵雪': [185, 195, 210, 235, 256, 232],
+        '陈伟': [110, 125, 138, 152, 175, 218],
+    };
+
+    new Chart(document.getElementById('comparisonChart'), {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: top5.map((m, i) => ({
+                label: m.name,
+                data: historyData[m.name],
+                backgroundColor: [
+                    'rgba(139, 92, 246, 0.7)',
+                    'rgba(16, 185, 129, 0.7)',
+                    'rgba(59, 130, 246, 0.7)',
+                    'rgba(245, 158, 11, 0.7)',
+                    'rgba(239, 68, 68, 0.7)',
+                ][i],
+                borderRadius: 6,
+                borderSkipped: false,
+            }))
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: 'index' },
+            plugins: {
+                legend: { position: 'top', labels: { usePointStyle: true, padding: 16, font: { size: 12 } } },
+                tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', padding: 10, cornerRadius: 8, callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw}K Token` } }
+            },
+            scales: {
+                y: { stacked: false, title: { display: true, text: '千 Token', font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11 } } },
+                x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+            }
+        }
+    });
+
+    // Evaluation Summary
+    document.getElementById('topPerformers').innerHTML = top5.slice(0, 3).map(m =>
+        `<li class="flex items-center justify-between text-sm"><span class="text-emerald-900 font-medium">${m.name} <span class="text-emerald-600 text-xs">(${m.group})</span></span><span class="font-bold text-emerald-700">${m.score}分</span></li>`
+    ).join('');
+
+    const bottom3 = members.slice(-3);
+    document.getElementById('underutilized').innerHTML = bottom3.map(m => {
+        const pct = (m.tokens / m.quota * 100).toFixed(0);
+        return `<li class="flex items-center justify-between text-sm"><span class="text-amber-900 font-medium">${m.name} <span class="text-amber-600 text-xs">(${m.group})</span></span><span class="font-bold text-amber-700">${pct}% 配额</span></li>`;
+    }).join('');
+
+    document.getElementById('anomalies').innerHTML = `
+        <li class="flex items-center justify-between text-sm"><span class="text-red-900 font-medium">李婷 环比下降 7.6%</span><span class="text-xs text-red-600 bg-red-100 px-2 py-0.5 rounded-full">关注</span></li>
+        <li class="flex items-center justify-between text-sm"><span class="text-red-900 font-medium">杨光 配额使用仅 48%</span><span class="text-xs text-red-600 bg-red-100 px-2 py-0.5 rounded-full">预警</span></li>
+        <li class="flex items-center justify-between text-sm"><span class="text-red-900 font-medium">朱鹏 连续 3 月下降</span><span class="text-xs text-red-600 bg-red-100 px-2 py-0.5 rounded-full">跟进</span></li>
+    `;
+    </script>
+</body>
+</html>
